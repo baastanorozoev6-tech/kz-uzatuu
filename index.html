@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="ky">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f4eee5">
+  <title>Кыз узатуу — чакыруу</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #293c34;
+      --muted: #718177;
+      --wine: #526d5d;
+      --gold: #b28d63;
+      --paper: #fbfaf5;
+      --serif: Georgia, "Times New Roman", serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      overflow-x: hidden;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse at 50% 8%, rgba(255,255,255,.95), transparent 48%),
+        linear-gradient(135deg, #dfe8df, #f4f2e9 48%, #e3e9df);
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+
+    button { font: inherit; }
+
+    .scene {
+      width: min(100%, 960px);
+      padding: 28px 20px 22px;
+      text-align: center;
+    }
+
+    .eyebrow {
+      margin: 0 0 15px;
+      color: var(--wine);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .34em;
+      text-transform: uppercase;
+    }
+
+    .book {
+      position: relative;
+      width: min(100%, 760px);
+      min-height: 510px;
+      margin: 0 auto;
+      padding: 13px;
+      border: 1px solid rgba(117, 137, 119, .3);
+      border-radius: 4px;
+      background: linear-gradient(135deg, #fbfaf5, #dfe7dd);
+      box-shadow: 0 28px 65px rgba(57, 72, 60, .17), 0 5px 16px rgba(57, 72, 60, .08);
+      perspective: 1400px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .paper {
+      position: relative;
+      display: grid;
+      min-height: 484px;
+      overflow: hidden;
+      place-items: center;
+      padding: clamp(28px, 6vw, 56px);
+      border: 1px solid rgba(169, 144, 112, .2);
+      border-radius: 2px;
+      background: var(--paper);
+      box-shadow: 0 3px 13px rgba(75, 84, 69, .06);
+      transform-origin: left center;
+      transition: transform .55s cubic-bezier(.2,.7,.2,1), opacity .25s ease;
+    }
+
+    .paper.turning {
+      opacity: .25;
+      transform: rotateY(-12deg) translateX(-10px);
+    }
+
+    .paper:not(.cover)::before {
+      position: absolute;
+      z-index: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 30%;
+      background:
+        linear-gradient(180deg, rgba(41, 60, 52, .06), rgba(41, 60, 52, .2)),
+        url("images/white-roses-bouquet.jpg") center / cover;
+      content: "";
+      pointer-events: none;
+    }
+
+    .paper:not(.cover)::after {
+      position: absolute;
+      z-index: 0;
+      top: 0;
+      right: 30%;
+      bottom: 0;
+      width: 5px;
+      background: linear-gradient(180deg, #d8c2a2, #9e7655, #d8c2a2);
+      content: "";
+      opacity: .75;
+      pointer-events: none;
+    }
+
+    .page-content {
+      position: relative;
+      z-index: 1;
+      width: min(100%, 460px);
+      animation: appear .45s ease both;
+    }
+
+    .paper:not(.cover) .page-content {
+      width: min(64%, 470px);
+      margin-right: auto;
+      text-align: left;
+    }
+
+    @keyframes appear {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .cover .page-content { max-width: 520px; }
+
+    .cover-photo {
+      display: block;
+      width: min(100%, 390px);
+      height: 205px;
+      margin: 0 auto 22px;
+      object-fit: cover;
+      object-position: center 43%;
+      border: 0;
+      border-radius: 2px;
+      box-shadow: 9px 9px 0 #dce5d9, 0 15px 32px rgba(41, 60, 52, .2);
+    }
+
+    .cover-label {
+      margin: 0 0 20px;
+      color: var(--wine);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .38em;
+    }
+
+    h1, h2, p { margin-top: 0; }
+
+    h1, h2, .names {
+      font-family: var(--serif);
+      font-weight: 400;
+    }
+
+    h1 {
+      margin-bottom: 14px;
+      color: var(--wine);
+      font-size: clamp(39px, 8vw, 68px);
+      line-height: .98;
+    }
+
+    .cover h1 {
+      font-size: clamp(58px, 10vw, 82px);
+      line-height: .95;
+    }
+
+    .cover-subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-family: var(--serif);
+      font-size: 19px;
+      font-style: italic;
+    }
+
+    .cover-flower {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      margin: 11px auto 8px;
+      place-items: center;
+      border: 1px solid rgba(183, 141, 88, .66);
+      border-radius: 50%;
+      color: var(--gold);
+      font-family: var(--serif);
+      font-size: 24px;
+    }
+
+    .tap-hint {
+      margin: 10px 0 0;
+      color: #998b7e;
+      font-size: 11px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .page-kicker {
+      margin-bottom: 14px;
+      color: #a68c71;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .3em;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin-bottom: 19px;
+      color: var(--wine);
+      font-size: clamp(30px, 6vw, 43px);
+      line-height: 1.1;
+    }
+
+    .body-copy {
+      margin: 0 auto;
+      color: #68594e;
+      font-family: var(--serif);
+      font-size: clamp(17px, 3.1vw, 20px);
+      line-height: 1.75;
+    }
+
+    .names {
+      margin: 19px 0;
+      color: var(--wine);
+      font-size: clamp(27px, 6vw, 39px);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 165px;
+      margin: 19px auto;
+      color: var(--gold);
+    }
+
+    .divider::before, .divider::after {
+      height: 1px;
+      flex: 1;
+      background: currentColor;
+      content: "";
+    }
+
+    .details {
+      display: grid;
+      gap: 17px;
+      width: min(100%, 360px);
+      margin: 26px auto 0;
+      text-align: left;
+    }
+
+    .detail {
+      display: grid;
+      grid-template-columns: 26px 1fr;
+      gap: 12px;
+      align-items: start;
+      color: #68594e;
+      font-family: var(--serif);
+      font-size: 17px;
+      line-height: 1.45;
+    }
+
+    .detail-icon { color: var(--gold); text-align: center; }
+    .detail strong { display: block; margin-bottom: 3px; color: var(--wine); font-family: "Segoe UI", Arial, sans-serif; font-size: 10px; letter-spacing: .15em; text-transform: uppercase; }
+    .detail .venue-name { display: block; color: var(--wine); font-family: var(--serif); font-size: 24px; font-weight: 700; letter-spacing: normal; line-height: 1.2; text-transform: none; }
+
+    .closing {
+      margin: 22px 0 0;
+      color: var(--muted);
+      font-family: var(--serif);
+      font-size: 17px;
+      font-style: italic;
+      line-height: 1.6;
+    }
+
+    .controls {
+      display: flex;
+      width: min(100%, 760px);
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin: 17px auto 0;
+    }
+
+    .nav-button {
+      display: inline-flex;
+      min-width: 112px;
+      min-height: 42px;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 8px 15px;
+      border: 1px solid rgba(128, 87, 92, .24);
+      border-radius: 30px;
+      color: var(--wine);
+      background: rgba(255, 253, 249, .8);
+      cursor: pointer;
+      transition: background .2s, transform .2s;
+    }
+
+    .nav-button:hover:not(:disabled) { background: #fffaf1; transform: translateY(-1px); }
+    .nav-button:disabled { opacity: .38; cursor: default; }
+
+    .page-status {
+      display: flex;
+      min-width: 120px;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: .12em;
+    }
+
+    .progress {
+      width: 42px;
+      height: 2px;
+      overflow: hidden;
+      background: rgba(118, 47, 66, .16);
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      background: var(--wine);
+      transition: width .3s ease;
+    }
+
+    .hint {
+      margin: 12px 0 0;
+      color: #998b7e;
+      font-size: 11px;
+    }
+
+    .music-link {
+      display: inline-flex;
+      min-height: 42px;
+      margin-top: 14px;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 18px;
+      border: 1px solid rgba(118, 47, 66, .25);
+      border-radius: 30px;
+      color: var(--wine);
+      background: rgba(255, 253, 249, .82);
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .music-link:hover { background: #fffaf1; }
+
+    .photo-credits {
+      margin: 12px auto 0;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.6;
+    }
+
+    .photo-credits a { color: inherit; }
+
+    .music-player {
+      width: min(100%, 360px);
+      margin: 12px auto 0;
+      overflow: hidden;
+      border: 1px solid rgba(118, 47, 66, .2);
+      border-radius: 10px;
+      background: #211c1b;
+      box-shadow: 0 8px 20px rgba(76, 52, 37, .12);
+    }
+
+    .music-player[hidden] { display: none; }
+
+    .music-player iframe {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border: 0;
+    }
+
+    .music-fallback {
+      display: block;
+      margin: 8px auto 0;
+      color: var(--muted);
+      font-size: 12px;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    @media (max-width: 520px) {
+      .scene { padding: 22px 13px 16px; }
+      .book { min-height: 455px; padding: 8px; border-radius: 4px; }
+      .paper { min-height: 437px; padding: 25px 20px; border-radius: 2px; }
+      .controls { gap: 6px; }
+      .nav-button { min-width: 44px; width: 44px; padding: 8px; font-size: 0; }
+      .nav-button span { font-size: 19px; }
+      .page-status { min-width: 112px; }
+      .cover-photo { width: min(100%, 290px); height: 155px; margin-bottom: 18px; }
+      .paper:not(.cover)::before { top: 0; right: 0; bottom: auto; width: 100%; height: 105px; }
+      .paper:not(.cover)::after { top: 105px; right: 0; bottom: auto; width: 100%; height: 4px; }
+      .paper:not(.cover) .page-content {
+        width: 100%;
+        margin: auto;
+        padding: 14px 11px;
+        border-left: 3px solid var(--gold);
+        background: rgba(251, 250, 245, .94);
+        text-align: center;
+      }
+      .details { width: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="scene">
+    <p class="eyebrow">Тойго чакыруу</p>
+
+    <section class="book" id="book" aria-label="Чакыруу китепчеси. Кийинки бетке өтүү үчүн баракты басыңыз">
+      <div class="paper cover" id="paper" aria-live="polite">
+        <div class="page-content" id="page-content"></div>
+      </div>
+    </section>
+
+    <nav class="controls" aria-label="Чакыруу китепчесинин беттери">
+      <button class="nav-button" id="previous" type="button" aria-label="Мурунку бет"><span aria-hidden="true">←</span> Артка</button>
+      <div class="page-status" aria-live="polite">
+        <span id="page-number">01</span>
+        <span class="progress" aria-hidden="true"><span id="progress"></span></span>
+        <span id="page-total">04</span>
+      </div>
+      <button class="nav-button" id="next" type="button" aria-label="Кийинки бет">Кийинки <span aria-hidden="true">→</span></button>
+    </nav>
+    <p class="hint">Жебелерди басыңыз же кийинки бетке өтүү үчүн баракты басыңыз</p>
+    <button class="music-link" id="music-toggle" type="button" aria-expanded="true" aria-controls="music-player">♫ Үнүн күйгүзүү</button>
+    <div class="music-player" id="music-player">
+      <iframe
+        id="music-frame"
+        title="Кыз узатуу чакыруусуна музыка"
+        src="https://www.youtube-nocookie.com/embed/U5c9ql8oklY?autoplay=1&mute=1&playsinline=1&rel=0"
+        data-src="https://www.youtube-nocookie.com/embed/U5c9ql8oklY?autoplay=1&mute=0&playsinline=1&rel=0"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allow="autoplay; encrypted-media; picture-in-picture"
+        allowfullscreen></iframe>
+    </div>
+    <a class="music-fallback" href="https://youtu.be/U5c9ql8oklY" target="_blank" rel="noopener noreferrer">Плеер ачылбаса, YouTube'дан угуңуз</a>
+    <p class="photo-credits">
+      Розалардын сүрөттөрү:
+      <a href="https://commons.wikimedia.org/wiki/File:White_rose_bridal_bouquet.jpg" target="_blank" rel="noopener noreferrer">Vimukthi</a>
+      (<a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 3.0</a>) жана
+      <a href="https://commons.wikimedia.org/wiki/File:Bouquet_of_white_roses_(2486808368).jpg" target="_blank" rel="noopener noreferrer">Ruth Hartnup</a>
+      (<a href="https://creativecommons.org/licenses/by/2.0/" target="_blank" rel="noopener noreferrer">CC BY 2.0</a>)
+    </p>
+  </main>
+
+  <script>
+    const pages = [
+      {
+        cover: true,
+        html: `
+          <img class="cover-photo" src="images/white-rose-bridal-bouquet.jpg" alt="Ак розалардан жасалган үйлөнүү гүлдестеси">
+          <h1>Кыз<br>узатуу</h1>
+          <p class="cover-subtitle">Кыз узатуу тоюна  чакыруу</p>
+          
+          <div class="cover-flower" aria-hidden="true">❀</div>
+          <p class="tap-hint">Биздин кубанычыбызга ортоктош болуңуз</p>
+        `
+      },
+      {
+        title: "Кадырлуу туугандар жана жакындар!",
+        kicker: "Сиздерди кубаныч менен чакырабыз",
+        html: `
+          <p class="body-copy">Барктап келген улуу салтты элибиз,<br>
+          Кыз узатуу аземине келиңиз,<br>
+          Салтанаттуу ак дасторкон үстүндө,<br>
+          Бакыт каалап, батаңызды бериңиз.</p>
+          <div class="divider" aria-hidden="true">❀</div>
+          <p class="body-copy">Катышып, ак тилегиңиздерди айтууңуздар бул күндү дагы да көркүнө чыгарат.</p>
+        `
+      },
+      {
+        title: "Сиздерди кызыбыз Умугулсундун кыз узатуу тоюна чакырабыз",
+        kicker: "Үй-бүлөлүк салтанат",
+        html: `
+          <p class="names"><span "font-size:.65em;color:#b78d58">&amp;</span><br></p>
+          <div class="divider" aria-hidden="true">✦</div>
+          <p class="body-copy"> Сиздерди урматтоо менен,<br>Расул Елиза</p>
+        `
+      },
+      {
+        title: "Сиздерди күтөбүз",
+        kicker: "",
+        html: `
+          <div class="details">
+            <div class="detail"><span class="detail-icon" aria-hidden="true">⌖</span><div><strong>Дареги</strong><span class="venue-name">Актоок айылы</span></div></div>
+            <div class="detail"><span class="detail-icon" aria-hidden="true">◇</span><div><strong>Күнү</strong>18.10.2026</div></div>
+          </div>
+          <p class="closing"><br>
+        `
+      }
+    ];
+
+    const paper = document.querySelector("#paper");
+    const content = document.querySelector("#page-content");
+    const previousButton = document.querySelector("#previous");
+    const nextButton = document.querySelector("#next");
+    const pageNumber = document.querySelector("#page-number");
+    const pageTotal = document.querySelector("#page-total");
+    const progress = document.querySelector("#progress");
+    const book = document.querySelector("#book");
+    const musicToggle = document.querySelector("#music-toggle");
+    const musicPlayer = document.querySelector("#music-player");
+    const musicFrame = document.querySelector("#music-frame");
+    let musicActive = true;
+    let musicAudible = false;
+    let currentPage = 0;
+    let isTurning = false;
+    let autoFlipTimer;
+    const autoFlipDelay = 5000;
+
+    pageTotal.textContent = String(pages.length).padStart(2, "0");
+
+    function renderPage() {
+      window.clearTimeout(autoFlipTimer);
+      const page = pages[currentPage];
+      content.innerHTML = page.cover
+        ? page.html
+        : `<p class="page-kicker">${page.kicker}</p><h2>${page.title}</h2>${page.html}`;
+      paper.classList.toggle("cover", Boolean(page.cover));
+      pageNumber.textContent = String(currentPage + 1).padStart(2, "0");
+      progress.style.width = `${((currentPage + 1) / pages.length) * 100}%`;
+      previousButton.disabled = currentPage === 0;
+      nextButton.disabled = currentPage === pages.length - 1;
+      book.setAttribute("aria-label", `${pages.length} беттин ${currentPage + 1}-бети. Улантуу үчүн баракты басыңыз`);
+      if (currentPage < pages.length - 1) {
+        autoFlipTimer = window.setTimeout(() => turnPage(1), autoFlipDelay);
+      }
+    }
+
+    function turnPage(direction) {
+      const nextPage = currentPage + direction;
+      if (isTurning || nextPage < 0 || nextPage >= pages.length) return;
+      window.clearTimeout(autoFlipTimer);
+      isTurning = true;
+      paper.classList.add("turning");
+      window.setTimeout(() => {
+        currentPage = nextPage;
+        renderPage();
+        paper.classList.remove("turning");
+        isTurning = false;
+      }, 180);
+    }
+
+    previousButton.addEventListener("click", () => turnPage(-1));
+    nextButton.addEventListener("click", () => turnPage(1));
+    book.addEventListener("click", () => turnPage(1));
+    musicToggle.addEventListener("click", () => {
+      if (musicActive && !musicAudible) {
+        musicFrame.src = musicFrame.dataset.src;
+        musicAudible = true;
+        musicToggle.textContent = "♫ Музыканы токтотуу";
+      } else if (musicActive) {
+        musicFrame.removeAttribute("src");
+        musicPlayer.hidden = true;
+        musicActive = false;
+        musicAudible = false;
+        musicToggle.setAttribute("aria-expanded", "false");
+        musicToggle.textContent = "♫ Музыканы угуу";
+      } else {
+        musicPlayer.hidden = false;
+        musicFrame.src = musicFrame.dataset.src;
+        musicActive = true;
+        musicAudible = true;
+        musicToggle.setAttribute("aria-expanded", "true");
+        musicToggle.textContent = "♫ Музыканы токтотуу";
+      }
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowRight" || event.key === " ") {
+        event.preventDefault();
+        turnPage(1);
+      } else if (event.key === "ArrowLeft") {
+        turnPage(-1);
+      }
+    });
+
+    renderPage();
+  </script>
+</body>
+</html>
